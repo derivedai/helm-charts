@@ -50,9 +50,6 @@ spec:
               protocol: TCP
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          env:
-            - name: HADOOP_DEFAULT_FS
-              value: s3a://casper-data-team-etl
           volumeMounts:
               - mountPath: /opt/hadoop/etc/hadoop/hive-site.xml
                 name: config-volume
