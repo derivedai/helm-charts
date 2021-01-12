@@ -1,0 +1,9 @@
+dependencies:
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 8.10.14
+- name: minio
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 5.0.30
+digest: sha256:ae528e37e63c39942ace4ddc637f5a659905792ffa0c83b0f950f3dc4ef469a9
+generated: "2020-07-10T22:57:50.346265-04:00"

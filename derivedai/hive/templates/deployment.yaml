@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hive-metastore.fullname" . }}
+  labels:
+    {{- include "hive-metastore.commonLabels" . | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "hive-metastore.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "hive-metastore.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "hive-metastore.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: config-volume
+          secret:
+            secretName: {{ include "hive-metastore.fullname" . }}-config
+        - name: snowflake-config
+          secret:
+            secretName: {{ include "hive-metastore.fullname" . }}-snowflake-config
+        - name: config-env
+          configMap:
+            name: {{ include "hive-metastore.fullname" . }}-env
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "/opt/hive/bin/hive", "--service", "metastore" ]
+          ports:
+            - name: http
+              containerPort: 9083
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: HADOOP_DEFAULT_FS
+              value: s3a://casper-data-team-etl
+          volumeMounts:
+              - mountPath: /opt/hadoop/etc/hadoop/hive-site.xml
+                name: config-volume
+                subPath: hive-site.xml
+              - mountPath: /opt/hive/conf/hive-env.sh
+                subPath: hive-env.sh
+                name: config-env
+              - mountPath: /opt/hive/conf/snowflake-config.xml
+                subPath: snowflake-config.xml
+                name: snowflake-config
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

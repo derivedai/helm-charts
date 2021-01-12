@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "hive-metastore.fullname" . }}-env
+  labels:
+    {{- include "hive-metastore.commonLabels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-6"
+data:
+  hive-env.sh: |
+    export HADOOP_OPTS="$HADOOP_OPTS"
+    export HADOOP_CLASSPATH=$(hadoop classpath):/opt/hive/lib/*
+    export AWS_REGION=us-east-1
+    export AWS_DEFAULT_REGION=us-east-1
