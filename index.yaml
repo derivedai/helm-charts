@@ -3,7 +3,7 @@ entries:
   hive-metastore:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2021-01-12T17:49:16.774471-05:00"
+    created: "2021-01-12T17:51:12.073668-05:00"
     dependencies:
     - condition: metastore.persistence.deployPostgres
       name: postgresql
@@ -14,6 +14,6 @@ entries:
     name: hive-metastore
     type: application
     urls:
-    - https://derivedai.github.io/helm-charts/derivedai/derivedai/hive-metastore-0.1.0.tgz
+    - https://derivedai.github.io/helm-charts/derivedai/hive-metastore-0.1.0.tgz
     version: 0.1.0
-generated: "2021-01-12T17:49:16.771853-05:00"
+generated: "2021-01-12T17:51:12.070937-05:00"
