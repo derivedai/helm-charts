@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: derivedai/hive
+  repository: derivedai/hive-metastore
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "3.0.0-hadoop-3.3.0"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -19,15 +19,18 @@ metastore:
   additionalProperties: {}
 
   persistence:
-      deployPostgres: true
-      dbVendor: ""
+    deployPostgres: true
+    dbVendor: "postgres"
 
-      ## The following values only apply if "deployPostgres" is set to false
-      dbName: ""
-      dbHost: ""
-      dbPort: 5432
-      dbUser: ""
-      dbPassword: ""
+    ## The following values only apply if "deployPostgres" is set to false
+    dbName: ""
+    dbHost: ""
+    dbPort: 5432
+    dbUser: ""
+    dbPassword: ""
+  lake:
+    deployMinio: false
+
 snowflakeConnector:
   enabled: false 
   config: {}
@@ -51,6 +54,17 @@ postgresql:
     size: 8Gi
     annotations: {}
 
+minio:
+  image:
+    tag: latest
+  mcImage:
+    tag: latest
+  persistence:
+    enabled: true
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+    annotations: {}
 
 
 serviceAccount:

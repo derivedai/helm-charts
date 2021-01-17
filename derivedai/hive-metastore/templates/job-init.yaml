@@ -33,11 +33,11 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         command: ["/opt/hive/bin/schematool", "-dbType", "postgres", "-initSchema"]
         volumeMounts:
-            - mountPath: /opt/hive/conf/hive-site.xml
+            - mountPath: /opt/hadoop/etc/hadoop/hive-site.xml
               name: config-volume
               subPath: hive-site.xml
-            - mountPath: /opt/hive/conf/hive-env.sh
-              subPath: hive-env.sh
+            - mountPath: /opt/hive-metastore/conf/metastore-env.sh
+              subPath: metastore-env.sh
               name: config-volume
       {{- with .Values.nodeSelector }}
       nodeSelector:

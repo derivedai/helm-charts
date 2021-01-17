@@ -8,8 +8,8 @@ metadata:
     "helm.sh/hook": pre-install
     "helm.sh/hook-weight": "-6"
 data:
-  hive-env.sh: |
+  metastore-env.sh: |
     export HADOOP_OPTS="$HADOOP_OPTS"
-    export HADOOP_CLASSPATH=$(hadoop classpath):/opt/hive/lib/*
+    export HADOOP_CLASSPATH=$(hadoop classpath):${HIVE_HOME}/lib/*
     export AWS_REGION=us-east-1
     export AWS_DEFAULT_REGION=us-east-1

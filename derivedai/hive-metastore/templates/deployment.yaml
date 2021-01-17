@@ -43,7 +43,8 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [ "/opt/hive/bin/hive", "--service", "metastore" ]
+          command: [ "/bin/bash", "-c", "--" ]
+          args: [ "while true; do sleep 30; done;" ]
           ports:
             - name: http
               containerPort: 9083
@@ -54,10 +55,10 @@ spec:
               - mountPath: /opt/hadoop/etc/hadoop/hive-site.xml
                 name: config-volume
                 subPath: hive-site.xml
-              - mountPath: /opt/hive/conf/hive-env.sh
-                subPath: hive-env.sh
+              - mountPath: /opt/hive-metastore/conf/metastore-env.sh
+                subPath: metastore-env.sh
                 name: config-env
-              - mountPath: /opt/hive/conf/snowflake-config.xml
+              - mountPath: /opt/hive-metastore/conf/snowflake-config.xml
                 subPath: snowflake-config.xml
                 name: snowflake-config
       {{- with .Values.nodeSelector }}

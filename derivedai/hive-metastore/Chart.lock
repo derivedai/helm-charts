@@ -3,7 +3,7 @@ dependencies:
   repository: https://charts.bitnami.com/bitnami
   version: 8.10.14
 - name: minio
-  repository: https://kubernetes-charts.storage.googleapis.com
-  version: 5.0.30
-digest: sha256:ae528e37e63c39942ace4ddc637f5a659905792ffa0c83b0f950f3dc4ef469a9
-generated: "2020-07-10T22:57:50.346265-04:00"
+  repository: https://helm.min.io
+  version: 8.0.9
+digest: sha256:19df74d00e96cc209583d37bae91606aa6031602107d222a997bae9ee82e4a37
+generated: "2021-01-17T13:15:50.143372-05:00"
