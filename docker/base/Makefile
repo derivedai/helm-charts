@@ -1,5 +1,6 @@
 BASE_IMAGE ?= continuumio/miniconda3
 BASE_TAG ?= 4.7.12
+REGISTRY ?= ""
 REPO_NAME ?= derivedai/base
 JAVA_VERSION ?= 8
 build:
