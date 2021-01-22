@@ -1,5 +1,5 @@
 
-APACHE_MIRROR_BASE="https://www.apache.org/dyn/mirrors/mirrors.cgi?action=download&filename="
+APACHE_MIRROR_BASE="https://archive.apache.org/dist/"
 TMP_DIR=/tmp
 
 download_package() {
