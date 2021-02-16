@@ -43,8 +43,9 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [ "/bin/bash", "-c", "--" ]
-          args: [ "while true; do sleep 30; done;" ]
+          # command: [ "/bin/bash", "-c", "--" ]
+          command: ["/opt/hive-metastore/bin/start-metastore"]
+          # args: [ "while true; do sleep 30; done;" ]
           ports:
             - name: http
               containerPort: 9083
@@ -55,6 +56,9 @@ spec:
               - mountPath: /opt/hadoop/etc/hadoop/hive-site.xml
                 name: config-volume
                 subPath: hive-site.xml
+              - mountPath: /opt/hadoop/etc/hadoop/core-site.xml
+                name: config-volume
+                subPath: core-site.xml
               - mountPath: /opt/hive-metastore/conf/metastore-env.sh
                 subPath: metastore-env.sh
                 name: config-env

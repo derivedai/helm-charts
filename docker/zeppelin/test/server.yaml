@@ -28,15 +28,63 @@ data:
   # Default value is 'local.zeppelin-project.org' while it points 127.0.0.1 and `kubectl port-forward zeppelin-server` will give localhost to connects.
   # If you have your ingress controller configured to connect to `zeppelin-server` service and have a domain name for it (with wildcard subdomain point the same address), you can replace serviceDomain field with your own domain.
   SERVICE_DOMAIN: local.zeppelin-project.org:8080
-  ZEPPELIN_K8S_SPARK_CONTAINER_IMAGE: 577380955846.dkr.ecr.us-east-1.amazonaws.com/cymatic/hadoop/spark
-  ZEPPELIN_K8S_CONTAINER_IMAGE: 577380955846.dkr.ecr.us-east-1.amazonaws.com/cymatic/hadoop/zeppelin
+  ZEPPELIN_K8S_SPARK_CONTAINER_IMAGE: derivedai/spark
+  ZEPPELIN_K8S_CONTAINER_IMAGE: derivedai/zeppelin:0.9.0-spark-3.0.1-hive-3.1.2-hadoop-3.2.1-interpreter
   ZEPPELIN_HOME: /opt/zeppelin
   ZEPPELIN_SERVER_RPC_PORTRANGE: 12320:12320
   # default value of 'master' property for spark interpreter.
   SPARK_MASTER: k8s://https://kubernetes.default.svc
   # default value of 'SPARK_HOME' property for spark interpreter.
   SPARK_HOME: /opt/spark
-  SPARK_CLASSPATH: "/opt/share/jars/spark-connectors-3.0.1-2.6.1.jar:/opt/share/jars/delta-core_2.12-0.7.0.jar"
+  SPARK_SQL_WAREHOUSE_DIR: "s3a://data-lake/hive/warehouse/"
+  # SPARK_CLASSPATH: "/opt/share/jars/spark-connectors-3.0.1-2.6.1.jar:/opt/share/jars/delta-core_2.12-0.7.0.jar"
+  HIVE_METASTORE_URI: "thrift://cat-hive-metastore.data.svc.cluster.local:9083"
+  HIVE_METASTORE_WAREHOUSE_DIR: "s3a://data-lake/hive/warehouse/"
+  ZEPPELIN_K8S_ENVS_HIVE_METASTORE_URI: "thrift://cat-hive-metastore.data.svc.cluster.local:9083"
+  ZEPPELIN_K8S_ENVS_HIVE_METASTORE_WAREHOUSE_DIR: "s3a://data-lake/hive/warehouse/"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: spark-defaults
+  namespace: data
+stringData:
+  spark-defaults.conf: |
+    # Set spark driver settings
+    spark.driver.memory 4g
+
+    # Set spark executor settings
+    spark.executor.instances  5
+    spark.executor.memory  2g
+
+    # Set hadoop/s3 setting
+    spark.hadoop.fs.s3a.access.key UgqcuJOvwHYt7VwJWvLw
+    spark.hadoop.fs.s3a.secret.key NVveartUpNOGVhbybNk5hbF8xeKJrUxuvv0VottG
+    spark.hadoop.fs.s3a.path.style.access true
+    spark.hadoop.fs.s3a.endpoint  http://lake-minio.data.svc.cluster.local
+    spark.hadoop.fs.s3a.impl org.apache.hadoop.fs.s3a.S3AFileSystem
+    spark.hadoop.fs.s3a.bucket.nyc-tlc.endpoint https://s3.us-east-1.amazonaws.com
+    spark.hadoop.fs.s3a.bucket.nyc-tlc.aws.credentials.provider org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider
+    spark.hadoop.fs.s3a.fast.upload true
+    spark.hadoop.fs.s3a.committer.name directory
+    spark.hadoop.parquet.enable.summary-metadata false
+    spark.kubernetes.file.upload.path s3a://data-lake/files/
+
+
+    # Setup hive metastore catalog
+    spark.sql.catalogImplementation hive
+    spark.hive.metastore.uris thrift://cat-hive-metastore.data.svc.cluster.local:9083
+    spark.sql.hive.metastore.version 3.0.0
+    spark.sql.hive.metastore.jars /usr/local/share/jars/hive/*
+    spark.sql.warehouse.dir s3a://data-lake/hive/warehouse/
+
+    # Setup iceberg catalog
+    spark.sql.catalog.spark_catalog  org.apache.iceberg.spark.SparkSessionCatalog
+    spark.sql.catalog.spark_catalog.type hive
+    spark.sql.catalog.spark_catalog.warehouse s3a://data-lake/hive/warehouse/
+    spark.sql.catalog.spark_catalog.uri thrift://cat-hive-metastore.data.svc.cluster.local:9083
+    spark.sql.extensions org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
+
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -114,9 +162,12 @@ spec:
             items:
               - key: nginx.conf
                 path: nginx.conf
+        - name: spark-conf
+          secret:
+            secretName: spark-defaults
       containers:
         - name: zeppelin-server
-          image: 577380955846.dkr.ecr.us-east-1.amazonaws.com/cymatic/hadoop/zeppelin
+          image: derivedai/zeppelin
           imagePullPolicy: Always
           command: ["sh", "-c", "$(ZEPPELIN_HOME)/bin/zeppelin.sh"]
           lifecycle:
@@ -142,6 +193,10 @@ spec:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: metadata.name
+          volumeMounts:
+            - mountPath: "/opt/spark/conf/spark-defaults.conf"
+              name: spark-conf
+              subPath: spark-defaults.conf
           envFrom:
             - configMapRef:
                 name: zeppelin-server-conf-map
@@ -190,6 +245,7 @@ apiVersion: v1
 metadata:
   name: zeppelin-server
 spec:
+  type: LoadBalancer
   ports:
     - name: http
       port: 80

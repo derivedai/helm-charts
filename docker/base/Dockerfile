@@ -33,16 +33,17 @@ RUN apt update && apt install -y wget gnupg procps
 
 # Install Java
 ARG ZULU_JAVA_VERSION
+RUN mkdir -p /usr/share/man/man1
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 && \
     wget -c https://cdn.azul.com/zulu/bin/zulu-repo_1.0.0-2_all.deb \
     -O /tmp/zulu-repo.deb && \
     apt install -y /tmp/zulu-repo.deb && \
     apt update && \
     rm -rf /tmp/zulu-repo.deb && \
-    apt install -y zulu${ZULU_JAVA_VERSION}-jre-headless
+    apt install -y zulu${ZULU_JAVA_VERSION}
 
 # Set JAVA_HOME
-ENV JAVA_HOME   /usr/lib/jvm/zulu${ZULU_JAVA_VERSION}/jre
+ENV JAVA_HOME   /usr/lib/jvm/zulu${ZULU_JAVA_VERSION}
 
 # COPY --from=downloader /jars /usr/share/java/hadoop
 

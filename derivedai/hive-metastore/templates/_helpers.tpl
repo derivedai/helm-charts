@@ -142,3 +142,12 @@ Create a default fully qualified app name for the postgres requirement.
 {{- list $baseConfig "" | include "recurseFlattenMap" -}}
 </configuration>
 {{- end -}}
+
+{{- define "metastore.coreSite" -}}
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+{{- $baseConfig := .Values.hadoopConfig  -}}
+{{- list $baseConfig "" | include "recurseFlattenMap" -}}
+</configuration>
+{{- end -}}

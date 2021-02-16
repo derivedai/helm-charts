@@ -1,7 +1,7 @@
 BASE_IMAGE ?= derivedai/base
 BASE_TAG ?= java-8
 REPO_NAME ?= derivedai/hadoop
-HADOOP_VERSION ?= 3.3.0
+HADOOP_VERSION ?= 3.2.1
 AWS_BUNDLE_VERSION ?= 1.11.939
 
 build:

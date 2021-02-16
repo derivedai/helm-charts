@@ -1,5 +1,5 @@
 
-APACHE_MIRROR_BASE="https://archive.apache.org/dist/"
+APACHE_MIRROR_BASE="https://mirrors.gigenet.com/apache/"
 TMP_DIR=/tmp
 
 download_package() {

@@ -1,0 +1,16 @@
+%spark.conf
+spark.driver.memory 4g
+
+# set executor number to be 6
+spark.executor.instances  3
+
+# set executor memrory 2g
+spark.executor.memory  2g
+spark.hadoop.fs.s3a.access.key <key>
+spark.hadoop.fs.s3a.secret.key <secret>
+spark.hadoop.fs.s3a.impl org.apache.hadoop.fs.s3a.S3AFileSystem
+spark.hadoop.fs.s3a.fast.upload true
+spark.kubernetes.file.upload.path s3a://data-lake/files/
+spark.hadoop.fs.s3a.path.style.access true
+
+

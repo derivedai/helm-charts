@@ -36,6 +36,9 @@ spec:
             - mountPath: /opt/hadoop/etc/hadoop/hive-site.xml
               name: config-volume
               subPath: hive-site.xml
+            - mountPath: /opt/hadoop/etc/hadoop/core-site.xml
+              name: config-volume
+              subPath: core-site.xml
             - mountPath: /opt/hive-metastore/conf/metastore-env.sh
               subPath: metastore-env.sh
               name: config-volume

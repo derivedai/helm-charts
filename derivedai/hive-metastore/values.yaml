@@ -14,6 +14,8 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+hadoopConfig: {}
+
 metastore:
   init: false
   additionalProperties: {}

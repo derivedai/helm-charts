@@ -1,0 +1,25 @@
+hadoopConfig:
+  fs.s3a.impl: org.apache.hadoop.fs.s3a.S3AFileSystem
+  fs.s3a.access.key: UgqcuJOvwHYt7VwJWvLw
+  fs.s3a.secret.key: NVveartUpNOGVhbybNk5hbF8xeKJrUxuvv0VottG
+  fs.s3a.path.style.access: true
+  fs.s3a.endpoint:  http://lake-minio.data.svc.cluster.local
+  fs.s3a.committer.name: directory
+
+metastore:
+  additionalProperties:
+    metastore.thrift.uris: "thrift://0.0.0.0:9083"
+    hive.metastore.warehouse.dir: "s3a://data-lake/hive/warehouse"
+  persistence:
+    deployPostgres: false
+    dbVendor: "postgres"
+
+    ## The following values only apply if "deployPostgres" is set to false
+    dbName: "metastore"
+    dbHost: "main-postgresql-headless.data.svc.cluster.local"
+    dbPort: 5432
+    dbUser: "metastore"
+    dbPassword: "metastore"
+service:
+  type: LoadBalancer
+  port: 9083
